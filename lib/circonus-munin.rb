@@ -80,13 +80,15 @@ class CirconusMuninServer
 
         begin_time = Time.now
         munin.get_response("fetch #{service}").each do |line|
-          line =~ /^(.+)\.value\s+(.+)$/
-          field = $1
-          value = $2
-          metric = LibXML::XML::Node.new("metric")
-          metric["name"] = field
-          metric.content = value.to_s
-          resmon_result << metric
+          unless line.length == 0 || line.include?("/")
+            line =~ /^(.+)\.value\s+(.+)$/
+            field = $1
+            value = $2
+            metric = LibXML::XML::Node.new("metric")
+            metric["name"] = field
+            metric.content = value.to_s
+            resmon_result << metric
+          end
         end
         end_time = Time.now
         runtime = end_time - begin_time
